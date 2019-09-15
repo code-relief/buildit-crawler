@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.net.MalformedURLException;
+import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
 @Log
@@ -18,15 +18,15 @@ public class CustomExceptionHandler {
         return buildResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MalformedURLException.class)
-    public ResponseEntity<BasicResponse> handleBadRequestException(MalformedURLException exception) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<BasicResponse> handleBadRequestException(ConstraintViolationException exception) {
         return buildResponse(exception, HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<BasicResponse> buildResponse(final Exception exception, final HttpStatus httpStatus) {
         String message = exception.getMessage();
-        String details = exception.getCause().getMessage();
-        log.severe(message);
+        String details = exception.getCause() != null ? exception.getCause().getMessage() : "";
+        log.warning(message);
         return new ResponseEntity<>(new BasicResponse(message, details), httpStatus);
     }
 }
