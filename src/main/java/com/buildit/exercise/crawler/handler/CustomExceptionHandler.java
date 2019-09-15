@@ -1,5 +1,6 @@
 package com.buildit.exercise.crawler.handler;
 
+import com.buildit.exercise.crawler.exception.CrawlerException;
 import com.buildit.exercise.crawler.model.BasicResponse;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<BasicResponse> handleBadRequestException(ConstraintViolationException exception) {
+        return buildResponse(exception, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CrawlerException.class)
+    public ResponseEntity<BasicResponse> handleCrawlerException(CrawlerException exception) {
         return buildResponse(exception, HttpStatus.BAD_REQUEST);
     }
 

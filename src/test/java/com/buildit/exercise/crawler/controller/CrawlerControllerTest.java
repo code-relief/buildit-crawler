@@ -34,7 +34,7 @@ public class CrawlerControllerTest {
     @Test
     public void testBasicRequestResponse() throws Exception {
         String url = "http://wiprodigital.com";
-        String expectedResult = String.format("{\"url\": \"%s\",\"links\": null\n}", url);
+        String expectedResult = String.format("{\"externalLinks\": [],\"internalLinks\": [],\"staticLinks\": [],\"url\": \"%s\"}", url);
         mvc.perform(MockMvcRequestBuilders
                 .post(PARSER_PATH)
                 .content(url)

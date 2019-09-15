@@ -2,6 +2,7 @@ package com.buildit.exercise.crawler.controller;
 
 import com.buildit.exercise.crawler.model.BasicResponse;
 import com.buildit.exercise.crawler.model.Result;
+import com.buildit.exercise.crawler.service.Crawler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,6 +22,12 @@ import javax.validation.constraints.Pattern;
 @Validated
 public class CrawlerController {
 
+    private final Crawler internalLinksCrawlerService;
+
+    public CrawlerController(final Crawler internalLinksCrawlerService) {
+        this.internalLinksCrawlerService = internalLinksCrawlerService;
+    }
+
     @PostMapping(value = "/crawl", produces = {"application/json"})
     @ApiOperation(value = "Web crawnel endpoint", notes = "Site map internal links builder", response = Result.class)
     @ApiResponses(value = {
@@ -32,7 +39,7 @@ public class CrawlerController {
             @NotBlank
             @Pattern(regexp="^(https?)://[a-zA-Z0-9][a-zA-Z0-9\\.&\\?#/%=]*")
             final String url) {
-        Result result = new Result();
+        Result result = internalLinksCrawlerService.crawl(url);
         result.setUrl(url);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
