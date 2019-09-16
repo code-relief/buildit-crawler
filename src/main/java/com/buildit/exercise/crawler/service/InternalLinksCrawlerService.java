@@ -3,11 +3,9 @@ package com.buildit.exercise.crawler.service;
 import com.buildit.exercise.crawler.exception.CrawlerException;
 import com.buildit.exercise.crawler.model.Result;
 import lombok.extern.java.Log;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +16,13 @@ import java.util.stream.Collectors;
 @Service
 @Log
 public class InternalLinksCrawlerService implements Crawler {
+
+    private final JsoupService jsoupService;
+
+    public InternalLinksCrawlerService(final JsoupService jsoupService) {
+        this.jsoupService = jsoupService;
+    }
+
     @Override
     public Result crawl(final String url) {
         Result result = new Result();
@@ -30,15 +35,10 @@ public class InternalLinksCrawlerService implements Crawler {
     private void followLink(String link, final String urlRoot, final Result result, final Set<String> visited) {
         if (!visited.contains(link)) {
             visited.add(link);
-            Document doc;
-            try {
-                if (isRelative(link)) {
-                    link = urlRoot + link;
-                }
-                doc = Jsoup.connect(link).get();
-            } catch (IOException e) {
-                throw new CrawlerException(e);
+            if (isRelative(link)) {
+                link = urlRoot + link;
             }
+            Document doc = jsoupService.getWebPage(link);
             Map<Boolean, Set<String>> links = doc
                     .select("a")
                     .stream()
