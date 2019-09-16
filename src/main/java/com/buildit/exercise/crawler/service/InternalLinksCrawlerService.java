@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -23,25 +22,32 @@ public class InternalLinksCrawlerService implements Crawler {
     public Result crawl(final String url) {
         Result result = new Result();
         Set<String> visited = new HashSet<>();
-        String urlRoot = clean(getLinkRootUrl(url));
+        String urlRoot = getLinkRootUrl(url);
         followLink(url, urlRoot, result, visited);
         return result;
     }
 
-    private void followLink(final String link, final String urlRoot, final Result result, final Set<String> visited) {
+    private void followLink(String link, final String urlRoot, final Result result, final Set<String> visited) {
         if (!visited.contains(link)) {
             visited.add(link);
             Document doc;
             try {
+                if (isRelative(link)) {
+                    link = urlRoot + link;
+                }
                 doc = Jsoup.connect(link).get();
             } catch (IOException e) {
                 throw new CrawlerException(e);
             }
-            Map<Boolean, List<String>> links = doc
+            Map<Boolean, Set<String>> links = doc
                     .select("a")
                     .stream()
-                    .map(a -> clean(a.attr("href")))
-                    .collect(Collectors.partitioningBy(href -> href.startsWith(urlRoot) || href.startsWith("/")));
+                    .map(a -> a.attr("href"))
+                    .collect(
+                            Collectors
+                                    .partitioningBy(
+                                            href -> isLocal(href, urlRoot),
+                                            Collectors.toSet()));
             result.getInternalLinks().addAll(links.get(true));
             result.getExternalLinks().addAll(links.get(false));
             result.getStaticLinks().addAll(doc
@@ -61,8 +67,13 @@ public class InternalLinksCrawlerService implements Crawler {
         throw new CrawlerException(String.format("Cannot find root URL for: %s", link));
     }
 
-    private String clean(final String link) {
-        return link.replace("https", "http").toLowerCase().trim();
+    private boolean isLocal(String link, String rootUrl) {
+        return link.matches(rootUrl.replaceAll("https?://", "^https?://") + ".*")
+                || isRelative(link);
+    }
+
+    private boolean isRelative(String link) {
+        return link.matches("^(/|#).+");
     }
 
 }
