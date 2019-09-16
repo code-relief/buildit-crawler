@@ -2,12 +2,13 @@
 
 The project is a typical Spring Boot web application with:
 
-##/crawl REST endpoint:
+## /crawl REST endpoint:
 
 curl -X POST "http://localhost:8082/api/v0/crawl" -H "accept: application/json" -H "Content-Type: application/json" -d "http://your.url.goes.here"
 
 and 
-##Swagger UI for REST test and review facilitation:
+
+## Swagger UI for REST test and review facilitation:
 
 http://localhost:8082/api/v0/swagger-ui.html
 
