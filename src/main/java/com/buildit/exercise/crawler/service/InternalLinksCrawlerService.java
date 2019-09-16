@@ -46,7 +46,7 @@ public class InternalLinksCrawlerService implements Crawler {
             }
             Document doc = webPageResult.get();
             Map<Boolean, Set<String>> links = doc
-                    .select("a")
+                    .select("a,area")
                     .stream()
                     .map(a -> a.attr("href"))
                     .collect(

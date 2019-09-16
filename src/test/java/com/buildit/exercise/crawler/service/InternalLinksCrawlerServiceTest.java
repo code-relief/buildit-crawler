@@ -30,7 +30,7 @@ public class InternalLinksCrawlerServiceTest {
     public void shouldDealWithEmptyWebPage() {
         String webPageUrl = "http://web.page.url";
         Document doc = Mockito.mock(Document.class);
-        Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(Collections.emptyList()));
+        Mockito.when(doc.select(ArgumentMatchers.eq("a,area"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
 
@@ -58,7 +58,7 @@ public class InternalLinksCrawlerServiceTest {
     public void shouldRequestOriginalWebPageUrl() {
         String webPageUrl = "http://web.page.url/my/additional/resource?item=123&limit=10";
         Document doc = Mockito.mock(Document.class);
-        Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(Collections.emptyList()));
+        Mockito.when(doc.select(ArgumentMatchers.eq("a,area"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
 
@@ -73,7 +73,7 @@ public class InternalLinksCrawlerServiceTest {
         String link1 = webPageUrl + "/href/link1";
         Document doc = Mockito.mock(Document.class);
         Element el1 = getLinkElementMock(Type.A, link1);
-        Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(el1));
+        Mockito.when(doc.select(ArgumentMatchers.eq("a,area"))).thenReturn(new Elements(el1));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
         Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link1))).thenReturn(Optional.empty());
@@ -104,17 +104,17 @@ public class InternalLinksCrawlerServiceTest {
         String relativeLink2 = "./dynamic/parametrized/link?source=abc&limit=10";
         Document doc = Mockito.mock(Document.class);
         Document innerDoc = Mockito.mock(Document.class);
-        Mockito.when(innerDoc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(Collections.emptyList()));
+        Mockito.when(innerDoc.select(ArgumentMatchers.eq("a,area"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(innerDoc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
         Element el1 = getLinkElementMock(Type.A, link1);
         Element el2 = getLinkElementMock(Type.A, link2);
-        Element el3 = getLinkElementMock(Type.A, link3);
+        Element el3 = getLinkElementMock(Type.AREA, link3);
         Element el4 = getLinkElementMock(Type.IMG, link4);
         Element el5 = getLinkElementMock(Type.IMG, link5);
         Element el6 = getLinkElementMock(Type.IMG, link6);
         Element relEl1 = getLinkElementMock(Type.A, relativeLink1);
         Element relEl2 = getLinkElementMock(Type.A, relativeLink2);
-        Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(el1, el2, el3, relEl1, relEl2));
+        Mockito.when(doc.select(ArgumentMatchers.eq("a,area"))).thenReturn(new Elements(el1, el2, el3, relEl1, relEl2));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(el4, el5, el6));
         Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
         Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link1))).thenReturn(Optional.of(innerDoc));
@@ -149,7 +149,7 @@ public class InternalLinksCrawlerServiceTest {
     }
 
     private enum Type {
-        A("href"), IMG("src");
+        A("href"), IMG("src"), AREA("href");
         private final String linkAttr;
 
         Type(final String linkAttr) {

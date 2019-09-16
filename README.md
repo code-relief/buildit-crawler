@@ -25,11 +25,23 @@ Example of JSON response:
     "http://www.milliondollarhomepage.com/testimonials.php",
     "http://www.milliondollarhomepage.com/pixellist.php",
     "http://www.milliondollarhomepage.com/buy.php",
+    "http://www.milliondollarhomepage.com/http//:www.phoneoutletstore.com",
     "http://www.milliondollarhomepage.com/blog.php",
     "http://www.milliondollarhomepage.com/press.php"
   ],
   "externalLinks": [
-    "http://www.twitter.com/tewy"
+    "http://www.pokahrooms.com/sign-up-bonus",
+    "http://www.milionpixelspage.com/",
+    "http://www.clearandsmoothskin.com/",
+    "http://www.philadelphia-nmfn.com/",
+    "http://vepkenez.com/",
+    "http://www.googadollars.com/",
+    "http://www.ccsports-online.co.uk/",
+    "http://www.job-secrets-revealed.com/",
+    "http://earnmoremoneyonline.com/easymoney.html",
+    "http://www.robsavino.com/",
+    "http://www.ochimapictures.com/",
+    "http://skylinkweather.com/"
   ],
   "staticLinks": [
     "./index_files/image-map(1).png",
