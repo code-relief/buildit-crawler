@@ -26,6 +26,7 @@ public class InternalLinksCrawlerService implements Crawler {
     @Override
     public Result crawl(final String url) {
         Result result = new Result();
+        result.setUrl(url);
         Set<String> visited = new HashSet<>();
         String urlRoot = getLinkRootUrl(url);
         followLink(url, urlRoot, result, visited);

@@ -19,13 +19,8 @@ public class CustomExceptionHandler {
         return buildResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<BasicResponse> handleBadRequestException(ConstraintViolationException exception) {
-        return buildResponse(exception, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(CrawlerException.class)
-    public ResponseEntity<BasicResponse> handleCrawlerException(CrawlerException exception) {
+    @ExceptionHandler({CrawlerException.class, ConstraintViolationException.class, IllegalArgumentException.class})
+    public ResponseEntity<BasicResponse> handleBadRequestException(RuntimeException exception) {
         return buildResponse(exception, HttpStatus.BAD_REQUEST);
     }
 

@@ -37,7 +37,7 @@ public class CrawlerController {
     public ResponseEntity<Result> crawlerEndpoint(
             @RequestBody
             @NotBlank
-            @Pattern(regexp="^(https?)://[a-zA-Z0-9][a-zA-Z0-9\\.&\\?#/%=]*")
+            @Pattern(regexp="^(https?)://[a-zA-Z0-9][a-zA-Z0-9\\.&\\?#/%=:\\-_]*")
             final String url) {
         Result result = internalLinksCrawlerService.crawl(url);
         result.setUrl(url);
