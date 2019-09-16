@@ -52,3 +52,10 @@ Example of JSON response:
   ]
 }
 ```
+
+## Possible extensions:
+- more manageable parsing rules (HTML elements and attributes should not be hardcoded in the service but configured somehow externally)
+- multithreaded website crawling (Fork-Join Java framework ???)
+- possible bugs fixed as currently the crawler follows some obvious scenarios
+- avoid web requests overloading (and hence be blocked by vendor) - some smart intermediate waiting between requests ...
+- ...
