@@ -2,8 +2,10 @@ package com.buildit.exercise.crawler.service;
 
 import org.jsoup.nodes.Document;
 
+import java.util.Optional;
+
 public interface JsoupService {
 
-    Document getWebPage(String url);
+    Optional<Document> getWebPage(String url);
 
 }

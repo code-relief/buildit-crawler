@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InternalLinksCrawlerServiceTest {
@@ -31,7 +32,7 @@ public class InternalLinksCrawlerServiceTest {
         Document doc = Mockito.mock(Document.class);
         Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(doc);
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
 
         Result result = crawlerService.crawl(webPageUrl);
 
@@ -59,11 +60,34 @@ public class InternalLinksCrawlerServiceTest {
         Document doc = Mockito.mock(Document.class);
         Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(Collections.emptyList()));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(doc);
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
 
         Result result = crawlerService.crawl(webPageUrl);
 
         Mockito.verify(jsoupService, Mockito.times(1)).getWebPage(webPageUrl);
+    }
+
+    @Test
+    public void shouldDealWhenPageResourceNotFound() {
+        String webPageUrl = "http://web.page.url";
+        String link1 = webPageUrl + "/href/link1";
+        Document doc = Mockito.mock(Document.class);
+        Element el1 = getLinkElementMock(Type.A, link1);
+        Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(el1));
+        Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(Collections.emptyList()));
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link1))).thenReturn(Optional.empty());
+
+        Result result = crawlerService.crawl(webPageUrl);
+
+        Mockito.verify(jsoupService, Mockito.times(1)).getWebPage(webPageUrl);
+        Mockito.verify(jsoupService, Mockito.times(1)).getWebPage(link1);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.getUrl()).isEqualTo(webPageUrl);
+        Assertions.assertThat(result.getExternalLinks()).isEmpty();
+        Assertions.assertThat(result.getInternalLinks()).containsExactly(link1);
+        Assertions.assertThat(result.getStaticLinks()).isEmpty();
     }
 
     @Test
@@ -77,7 +101,7 @@ public class InternalLinksCrawlerServiceTest {
         String link5 = externalWebPageUrl + "/src/link2";
         String link6 = externalWebPageUrl + "/src/link3";
         String relativeLink1 = "/simple/link.html";
-        String relativeLink2 = "/dynamic/parametrized/link?source=abc&limit=10";
+        String relativeLink2 = "./dynamic/parametrized/link?source=abc&limit=10";
         Document doc = Mockito.mock(Document.class);
         Document innerDoc = Mockito.mock(Document.class);
         Mockito.when(innerDoc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(Collections.emptyList()));
@@ -92,11 +116,11 @@ public class InternalLinksCrawlerServiceTest {
         Element relEl2 = getLinkElementMock(Type.A, relativeLink2);
         Mockito.when(doc.select(ArgumentMatchers.eq("a"))).thenReturn(new Elements(el1, el2, el3, relEl1, relEl2));
         Mockito.when(doc.select(ArgumentMatchers.eq("img"))).thenReturn(new Elements(el4, el5, el6));
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(doc);
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link1))).thenReturn(innerDoc);
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link3))).thenReturn(innerDoc);
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl + relativeLink1))).thenReturn(innerDoc);
-        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl + relativeLink2))).thenReturn(innerDoc);
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl))).thenReturn(Optional.of(doc));
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link1))).thenReturn(Optional.of(innerDoc));
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(link3))).thenReturn(Optional.of(innerDoc));
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl + relativeLink1))).thenReturn(Optional.of(innerDoc));
+        Mockito.when(jsoupService.getWebPage(ArgumentMatchers.eq(webPageUrl + relativeLink2))).thenReturn(Optional.of(innerDoc));
 
         Result result = crawlerService.crawl(webPageUrl);
 

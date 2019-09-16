@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +40,11 @@ public class InternalLinksCrawlerService implements Crawler {
             if (isRelative(link)) {
                 link = urlRoot + link;
             }
-            Document doc = jsoupService.getWebPage(link);
+            Optional<Document> webPageResult = jsoupService.getWebPage(link);
+            if (!webPageResult.isPresent()) {
+                return;
+            }
+            Document doc = webPageResult.get();
             Map<Boolean, Set<String>> links = doc
                     .select("a")
                     .stream()
@@ -74,7 +79,7 @@ public class InternalLinksCrawlerService implements Crawler {
     }
 
     private boolean isRelative(String link) {
-        return link.matches("^(/|#).+");
+        return link.matches("^(\\.?/|#).+");
     }
 
 }
